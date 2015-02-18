@@ -1,3 +1,11 @@
+var
+    DamWeb = require('../converters/DamWeb'),
+    PDN = require('../converters/PDN'),
+    Game = require('../../../draughts-reader-core/src/core/Game'),
+    symbols = require('../../../draughts-reader-core/src/utils/symbols'),
+    Piece = symbols.Piece
+;
+
 (function($) {
 
     function generateUUID(){

@@ -1,0 +1,12 @@
+{
+  "name": "draughts-reader",
+  "version" : "0.0.1",
+  "devDependencies": {
+    
+  },
+  "main" : "src/main.js",
+  "scripts": {
+    "build": "rm -rf ./dist/ && mkdir \"./dist/\" && browserify ./src/main.js -o ./dist/draughts-reader.js"
+  },
+  "licence" : "MIT"
+}

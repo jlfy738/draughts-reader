@@ -1,6 +1,6 @@
 var
-    symbols = require('../core/symbols'),
-    Game = require('../core/Game'),
+    symbols = require('../../../draughts-reader-core/src/utils/symbols'),
+    Game = require('../../../draughts-reader-core/src/core/Game'),
     Piece = symbols.Piece
 ;
 
