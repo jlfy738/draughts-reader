@@ -1,9 +1,7 @@
 var
-    DamWeb = require('../converters/DamWeb'),
-    PDN = require('../converters/PDN'),
-    Game = require('../../../draughts-reader-core/src/core/Game'),
-    symbols = require('../../../draughts-reader-core/src/utils/symbols'),
-    Piece = symbols.Piece
+    DGController = require('draughts-game-controller').DGController,
+    Game = require('draughts-reader-core').Game,
+    Piece = require('draughts-reader-core').Piece
 ;
 
 (function($) {
@@ -33,7 +31,7 @@ var
         var defaults = {
             format:'pdn',
             type:'canvas',
-            pdnFirstLoadNum:1,
+            firstLoadNum:1,
             cvSquareSize:40,
             cvSquareDarkColor:'#B4814E',
             cvSquareLightColor:'#FFFFFF',
@@ -69,36 +67,34 @@ var
         var game = null;
         var board = null;
 
-        var pdnManager = null;
-        var pdnCurrentNumGame = null;
+        var dgController = null;
 
 
         plugin.init = function() {
             plugin.options = $.extend({}, defaults, options);
             
+            dgController = new DGController();
+            dgController.setCurentNumGame(1);
+
             if (plugin.options['format'] == "damweb"){
                 var position = $element.data('position');
                 var notation = $element.data('notation');
-                game = DamWeb.getGame(position, notation);
-                game.start(); 
-                board = game.board;
+                dgController.initDamWeb(position, notation);
             } else if (plugin.options['format'] == "pdn"){
                 var pdnText = $element.html();
-                pdnManager = new PDN(pdnText);
+                dgController.initPDN(pdnText);
+            }
 
-                var nbGames = pdnManager.getGameCount();
-                if (nbGames > 0){
-                    var firstNum = plugin.options['pdnFirstLoadNum'];
-                    if (firstNum){
-                        if (firstNum > nbGames){
-                            firstNum = 1;
-                        }
-                        pdnCurrentNumGame = firstNum;
-                        initPDNGame();
-                    }
+
+            var nbGames = dgController.getGameCount();
+            if (nbGames > 0){
+                var firstNum = plugin.options['firstLoadNum'];
+                if (firstNum > nbGames){
+                    firstNum = 1;
                 }
-            } 
-            
+                initGame(firstNum);
+            }
+
             // if no game is loaded, we initialize an emty one.
             if (game === null){
                 game = new Game();
@@ -108,8 +104,7 @@ var
             initLayout();
 
             $("#" + id).on("change", "select[name="+id+"-menu]",function(){
-                pdnCurrentNumGame = $(this).val();
-                initPDNGame();
+                initGame($(this).val());
                 initLayout();
             });
 
@@ -139,12 +134,13 @@ var
             });
         };
 
-        var initPDNGame = function(){
+        var initGame = function(currentNumGame){
             razAnim();
             razAutoPlay();
             
-            if (pdnCurrentNumGame){
-                game = pdnManager.getGame(pdnCurrentNumGame);
+            if (currentNumGame){
+                dgController.setCurentNumGame(currentNumGame);
+                game = dgController.getGame();
                 game.start();
             } else {
                 game = new Game();
@@ -175,7 +171,7 @@ var
                     var titles = pdnManager.getTitles("tagWhite - tagBlack [tagRound] - tagResult");
                     menu = '<select name="' + id + '-menu">';
                     
-                    if (!plugin.options['pdnFirstLoadNum']){
+                    if (!plugin.options['firstLoadNum']){
                         menu += '<option value="">&mdash;</option>';
                     }
 

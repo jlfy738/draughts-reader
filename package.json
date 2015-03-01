@@ -1,6 +1,11 @@
 {
   "name": "draughts-reader",
   "version" : "0.0.1",
+  "dependencies" : {
+    "jquery" : "1.x.x",
+    "draughts-game-controller" : "https://github.com/jlfy738/draughts-game-controller/archive/1.0.0.tar.gz",
+    "draughts-reader-core" : "https://github.com/jlfy738/draughts-reader-core/archive/1.0.0.tar.gz"
+  },
   "devDependencies": {
     
   },
