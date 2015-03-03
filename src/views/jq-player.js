@@ -1,5 +1,5 @@
 var
-    DGController = require('draughts-game-controller').DGController,
+    DGController = require('draughts-game-controller'),
     Game = require('draughts-reader-core').Game,
     Piece = require('draughts-reader-core').Piece
 ;
@@ -74,7 +74,7 @@ var
             plugin.options = $.extend({}, defaults, options);
             
             dgController = new DGController();
-            dgController.setCurentNumGame(1);
+            dgController.setCurrentNumGame(1);
 
             if (plugin.options['format'] == "damweb"){
                 var position = $element.data('position');
@@ -139,7 +139,7 @@ var
             razAutoPlay();
             
             if (currentNumGame){
-                dgController.setCurentNumGame(currentNumGame);
+                dgController.setCurrentNumGame(currentNumGame);
                 game = dgController.getGame();
                 game.start();
             } else {
@@ -165,28 +165,27 @@ var
             }
 
             var menu = '';
-            if (pdnManager !== null){
-                var nbGames = pdnManager.getGameCount();
-                if (nbGames > 1) {
-                    var titles = pdnManager.getTitles("tagWhite - tagBlack [tagRound] - tagResult");
-                    menu = '<select name="' + id + '-menu">';
-                    
-                    if (!plugin.options['firstLoadNum']){
-                        menu += '<option value="">&mdash;</option>';
-                    }
-
-                    for (var k = 0; k < titles.length; k++){
-                        var t = titles[k];
-                        var isSelect = (pdnCurrentNumGame == t['num']);
-                        var attrSelected = '';
-                        if (isSelect){
-                            attrSelected = ' selected="selected"';
-                        }
-                        menu += '<option value="' + t["num"] + '"' + attrSelected + '>' + t["num"] + ' &ndash; ' + t["title"] + '</option>';
-                    }
-                    menu += '</select>';
+            var nbGames = dgController.getGameCount();
+            if (nbGames > 1) {
+                var titles = dgController.getTitles("tagWhite - tagBlack [tagRound] - tagResult");
+                menu = '<select name="' + id + '-menu">';
+                
+                if (!plugin.options['firstLoadNum']){
+                    menu += '<option value="">&mdash;</option>';
                 }
+
+                for (var k = 0; k < titles.length; k++){
+                    var t = titles[k];
+                    var isSelect = (dgController.getCurrentNumGame() == t['num']);
+                    var attrSelected = '';
+                    if (isSelect){
+                        attrSelected = ' selected="selected"';
+                    }
+                    menu += '<option value="' + t["num"] + '"' + attrSelected + '>' + t["num"] + ' &ndash; ' + t["title"] + '</option>';
+                }
+                menu += '</select>';
             }
+            
 
             layout += '</td>';
             layout += '<td>';
