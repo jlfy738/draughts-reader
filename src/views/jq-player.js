@@ -25,12 +25,109 @@ var
         return id;
     };
 
+    function getHTMLNotation(notationStruct){
+        var ht = '';
+        for (var k = 0; k < notationStruct.length; k++){
+            var line = notationStruct[k];
+            
+
+            var bn = '';
+            if (line.number < 10) {
+                bn += '&nbsp;';
+            }
+            bn += line.number;
+                            
+
+            var currentWhite = false;
+            var posWhite = '';
+            var bw = '';
+            if (line.white !== undefined){
+                currentWhite = line.white.current;
+                posWhite = line.white.position;
+                var nsWhite = getNotationStyle(line.white.move);
+                if (nsWhite.before) {
+                    bw += '&nbsp;';
+                }
+                bw += nsWhite.notation;
+                if (nsWhite.after) {
+                    bw += '&nbsp;';
+                }
+            } else {
+                bw = '&nbsp;...&nbsp;';
+            }
+                
+            var currentBlack = false;
+            var posBlack = '';
+            var bm = '';
+            if (line.black !== undefined){
+                currentBlack = line.black.current;
+                posBlack = line.black.position;
+                var nsBlack = getNotationStyle(line.black.move);
+                if (nsBlack.before) {
+                    bm += '&nbsp;';
+                }
+                bm += nsBlack.notation;
+                if (nsBlack.after) {
+                    bm += '&nbsp;';
+                }
+            }
+
+
+            var s = '';
+            s += bn + '. ';
+
+
+            s += '<span';
+            if (!isNaN(posWhite)){
+                s += ' data-pos="' + posWhite + '"';
+            }
+            if (currentWhite){
+                s += ' class="active"';
+            }
+            s += '>';
+            s += bw + '</span>';
+            s += " &nbsp;";
+
+
+            s += '<span';
+            if (!isNaN(posBlack)){
+                s += ' data-pos="' + posBlack + '"';
+            }
+            if (currentBlack){
+                s += ' class="active"';
+            }
+            s += '>';
+            s += bm + '</span>';
+
+
+            ht += s + "<br />";
+        }
+
+        return ht;
+    };
+
+    function getNotationStyle(notation){
+        var idxSep = notation.indexOf("-");
+        if (idxSep == -1) {
+            idxSep = notation.indexOf("x");
+        } 
+        var s = notation.substring(idxSep + 1);
+
+        var before = (idxSep == 1);
+        var after = (s.length == 1);
+
+        notation = notation.replace("-", "&minus;");
+        notation = notation.replace("x", "&times;");
+
+        var map = { 'notation':notation, 'before':before, 'after':after };
+        return map;
+    };
+
     $.player = function(element, options) {
 
         // Default options
         var defaults = {
             format:'pdn',
-            type:'canvas',
             firstLoadNum:1,
             cvSquareSize:40,
             cvSquareDarkColor:'#B4814E',
@@ -154,15 +251,11 @@ var
             layout += '<tr>';
             layout += '<td>';
 
-            if (plugin.options['type'] == "canvas"){
-                layout += '<div class="outer-box">'
-                layout += '    <div class="inner-box">'
-                layout += '        <canvas class="cv-board"></canvas>';
-                layout += '    </div>';
-                layout += '</div>';
-            } else if (plugin.options['type'] == "ascii"){
-                layout += '<div class="ascii-view"></div>';
-            }
+            layout += '<div class="outer-box">'
+            layout += '    <div class="inner-box">'
+            layout += '        <canvas class="cv-board"></canvas>';
+            layout += '    </div>';
+            layout += '</div>';
 
             var menu = '';
             var nbGames = dgController.getGameCount();
@@ -217,17 +310,13 @@ var
 
             refreshNotation();
 
-            if (plugin.options['type'] == "ascii"){
-                refreshASCII();
-            } else if (plugin.options['type'] == "canvas"){
-                var $c = $("#" + id + " .cv-board")[0];
-                var ctx = $c.getContext("2d");
-                var sqWidth = plugin.options['cvSquareSize'];
-                $c.width = 10*sqWidth;
-                $c.height = 10*sqWidth;
+            var $c = $("#" + id + " .cv-board")[0];
+            var ctx = $c.getContext("2d");
+            var sqWidth = plugin.options['cvSquareSize'];
+            $c.width = 10*sqWidth;
+            $c.height = 10*sqWidth;
 
-                drawCanvasContent(ctx);
-            }
+            drawCanvasContent(ctx);
         };
 
         var razAnim = function(){
@@ -246,22 +335,12 @@ var
 
         var refreshAll = function(){
             refreshNotation();
-
-            if (plugin.options['type'] == "ascii"){
-                refreshASCII();
-            } else if (plugin.options['type'] == "canvas"){
-                refreshCanvas();
-            }
+            refreshCanvas();
         };
 
         var refreshNotation = function(){
             var $notationArea = $("#" + id + " .notation");
-            $notationArea.html(getHTMLNotation());
-        };
-
-        var refreshASCII = function(){
-            var $c = $("#" + id + " .ascii-view");
-            $c.html(getASCIIBoard());
+            $notationArea.html(getHTMLNotation(game.getNotation()));
         };
 
         var refreshCanvas = function(){
@@ -299,15 +378,10 @@ var
         };
 
         var applyNextAuto = function(){
-            if (plugin.options['type'] == "ascii"){
-                game.next();
-                refreshAll();
-            } else if (plugin.options['type'] == "canvas"){
-                razAnim();
-                drawCanvasNextMove();
-                game.next();
-                refreshNotation();
-            }
+            razAnim();
+            drawCanvasNextMove();
+            game.next();
+            refreshNotation();
         };
 
         var applyPrev = function(){
@@ -325,9 +399,7 @@ var
                 }
 
                 if (game.hasNext()){
-                    if (plugin.options['type'] == "canvas"){
-                        refreshCanvas();
-                    }
+                    refreshCanvas();
                     applyNextAuto();
                 } else {
                     razAutoPlay();
@@ -343,157 +415,7 @@ var
             }
         };
 
-
-        var getHTMLNotation = function(){
-            var notationStruct = game.getNotation();
-
-            var ht = '';
-            for (var k = 0; k < notationStruct.length; k++){
-                var line = notationStruct[k];
-                
-
-                var bn = '';
-                if (line.number < 10) {
-                    bn += '&nbsp;';
-                }
-                bn += line.number;
-                                
-
-                var currentWhite = false;
-                var posWhite = '';
-                var bw = '';
-                if (line.white !== undefined){
-                    currentWhite = line.white.current;
-                    posWhite = line.white.position;
-                    var nsWhite = getNotationStyle(line.white.move);
-                    if (nsWhite.before) {
-                        bw += '&nbsp;';
-                    }
-                    bw += nsWhite.notation;
-                    if (nsWhite.after) {
-                        bw += '&nbsp;';
-                    }
-                } else {
-                    bw = '&nbsp;...&nbsp;';
-                }
-                    
-                var currentBlack = false;
-                var posBlack = '';
-                var bm = '';
-                if (line.black !== undefined){
-                    currentBlack = line.black.current;
-                    posBlack = line.black.position;
-                    var nsBlack = getNotationStyle(line.black.move);
-                    if (nsBlack.before) {
-                        bm += '&nbsp;';
-                    }
-                    bm += nsBlack.notation;
-                    if (nsBlack.after) {
-                        bm += '&nbsp;';
-                    }
-                }
-
-
-                var s = '';
-                s += bn + '. ';
-
-
-                s += '<span';
-                if (!isNaN(posWhite)){
-                    s += ' data-pos="' + posWhite + '"';
-                }
-                if (currentWhite){
-                    s += ' class="active"';
-                }
-                s += '>';
-                s += bw + '</span>';
-                s += " &nbsp;";
-
-
-                s += '<span';
-                if (!isNaN(posBlack)){
-                    s += ' data-pos="' + posBlack + '"';
-                }
-                if (currentBlack){
-                    s += ' class="active"';
-                }
-                s += '>';
-                s += bm + '</span>';
-
-
-                ht += s + "<br />";
-            }
-
-            return ht;
-        };
-
-        var getNotationStyle = function(notation){
-            var idxSep = notation.indexOf("-");
-            if (idxSep == -1) {
-                idxSep = notation.indexOf("x");
-            } 
-            var s = notation.substring(idxSep + 1);
-
-            var before = (idxSep == 1);
-            var after = (s.length == 1);
-
-            notation = notation.replace("-", "&minus;");
-            notation = notation.replace("x", "&times;");
-
-            var map = { 'notation':notation, 'before':before, 'after':after };
-            return map;
-        };
-
-        var getASCIIBoard = function() {
-            var s = "";
-            
-            var cr = "<br />";
-            var sp = "&nbsp;";
-            var row = "";
-
-            s += "================================" + cr;
-            for (var k = 0; k < 10; k++) {
-                row += "|";
-                for (var l = 1; l <= 5; l++) {
-
-                    var num = 5 * k + l;
-                    var p = board.getSquare(num).piece;
-
-                    if (k == 0 || k == 2 || k == 4 || k == 6 || k == 8) {
-                        row += sp + sp + sp;
-                    }
-
-                    switch (p) {
-                    case Piece.PAWN_WHITE:
-                        row += sp + "o" + sp;
-                        break;
-                    case Piece.PAWN_BLACK:
-                        row += sp + "x" + sp;
-                        break;
-                    case Piece.DAME_WHITE:
-                        row += sp + "O" + sp;
-                        break;
-                    case Piece.DAME_BLACK:
-                        row += sp + "X" + sp;
-                        break;
-                    default:
-                        row += sp + "." + sp;
-                    }
-
-                    if (k == 1 || k == 3 || k == 5 || k == 7 || k == 9) {
-                        row += sp + sp + sp;
-                    }
-                }
-                row += "|";
-
-                s += row + cr;
-                row = "";
-            }
-            s += "================================";
-
-            return s;
-        };
-
+        
         var drawPiece = function(ctx, piece, x, y, r){
             var sqWidth = plugin.options['cvSquareSize'];
             var shift = ((~~(sqWidth / 10)) + 1) / 2;
