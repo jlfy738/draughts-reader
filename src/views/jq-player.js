@@ -174,8 +174,8 @@ var
             dgController.setCurrentNumGame(1);
 
             if (plugin.options['format'] == "damweb"){
-                var position = $element.data('position');
-                var notation = $element.data('notation');
+                var position = $element.attr("data-position");
+                var notation = $element.attr("data-notation");
                 dgController.initDamWeb(position, notation);
             } else if (plugin.options['format'] == "pdn"){
                 var pdnText = $element.html();
