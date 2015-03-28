@@ -418,7 +418,7 @@ var
         
         var drawPiece = function(ctx, piece, x, y, r){
             var sqWidth = plugin.options['cvSquareSize'];
-            var shift = ((~~(sqWidth / 10)) + 1) / 2;
+            var shift = 1 + ((~~(sqWidth / 10)) + 1) / 2;
 
             switch (piece) {
             case Piece.PAWN_WHITE:
@@ -432,21 +432,21 @@ var
             case Piece.PAWN_BLACK:
                 ctx.beginPath();
                 ctx.arc(x, y, r ,0, Math.PI * 2, true);
-                ctx.strokeStyle = "#888";
+                ctx.strokeStyle = "#eee";
                 ctx.fillStyle = "black";
                 ctx.fill();
                 ctx.stroke();
                 break;
             case Piece.DAME_WHITE:
                 ctx.beginPath();
-                ctx.arc(x, y + shift, r ,0, Math.PI * 2, true);
+                ctx.arc(x, y, r ,0, Math.PI * 2, true);
                 ctx.strokeStyle = "black";
                 ctx.fillStyle = "white";
                 ctx.fill();
                 ctx.stroke();
 
                 ctx.beginPath();
-                ctx.arc(x, y - shift, r ,0, Math.PI * 2, true);
+                ctx.arc(x, y, shift ,0, Math.PI * 2, true);
                 ctx.strokeStyle = "black";
                 ctx.fillStyle = "white";
                 ctx.fill();
@@ -454,14 +454,14 @@ var
                 break;
             case Piece.DAME_BLACK:
                 ctx.beginPath();
-                ctx.arc(x, y + shift, r ,0, Math.PI * 2, true);
-                ctx.strokeStyle = "#888";
+                ctx.arc(x, y, r ,0, Math.PI * 2, true);
+                ctx.strokeStyle = "#eee";
                 ctx.fillStyle = "black";
                 ctx.fill();
                 ctx.stroke();
 
                 ctx.beginPath();
-                ctx.arc(x, y - shift, r ,0, Math.PI * 2, true);
+                ctx.arc(x, y, shift ,0, Math.PI * 2, true);
                 ctx.strokeStyle = "white";
                 ctx.fillStyle = "black";
                 ctx.fill();
@@ -509,7 +509,7 @@ var
 
             var x = x + (sqWidth / 2);
             var y = y + (sqWidth / 2);
-            var r = sqWidth / 2 - (sqWidth / 10 * 2);
+            var r = sqWidth / 2 - (sqWidth / 10);
 
             drawPiece(ctx, piece, x, y, r);
         };
