@@ -300,7 +300,7 @@ var
                 layout += '    <button class="prev">&lsaquo;</button>';
                 layout += '    <button class="next">&rsaquo;</button>';
                 layout += '    <button class="end">&raquo;</button>';
-                layout += '    <button class="autoplay">&diams;</button>';
+                layout += '    <button class="autoplay">&diams; auto</button>';
                 layout += '</div>';
             }
             layout += '</td>';
