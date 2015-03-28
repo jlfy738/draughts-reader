@@ -160,6 +160,8 @@ var
         var timer = null;
         // Timer (Autoplay)
         var timerAutoPlay = null;
+        // What time is it at the end of the last animation ?
+        var timeEndLastAnimation = null;
 
         var game = null;
         var board = null;
@@ -398,13 +400,32 @@ var
                     return;
                 }
 
+                // Wait a little if necessary.
+                if (timeEndLastAnimation !== null){
+                    var interSinceLastAnim = (new Date()).getTime() - timeEndLastAnimation;
+                    var restToWait = plugin.options['delayAutoPlay'] - interSinceLastAnim;
+                    timeEndLastAnimation = null;
+                    
+                    if (restToWait > 0) {
+                        setTimeout(function(){ 
+                            callBackAction();
+                        }, restToWait);
+                    } else {
+                        callBackAction();
+                    }
+                } else {
+                    callBackAction();
+                }
+            };
+
+            var callBackAction = function(){
                 if (game.hasNext()){
                     refreshCanvas();
                     applyNextAuto();
                 } else {
                     razAutoPlay();
                 }
-            };
+            }
 
             // Stop/Start
             if (timerAutoPlay !== null){
@@ -640,11 +661,14 @@ var
                                 i++;
                             } else {
                                 razAnim();
+                                timeEndLastAnimation = (new Date()).getTime();
                             }
                         };
                         timer = setInterval(callback, plugin.options['delayToRemoveCapturedPiece']);
                     })();
                 }
+            } else {
+                timeEndLastAnimation = (new Date()).getTime();
             }
         };
 
