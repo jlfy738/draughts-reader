@@ -138,9 +138,9 @@ var
             displayNumbers:false,
             numberTextFont:"10px Arial",
             numberTextColor:"#FFFFFF",
-            delayAfterHighlight:200,
-            delayToJump:200,
-            delayToRemoveCapturedPiece:100,
+            delayAfterHighlight:400,
+            delayToJump:400,
+            delayToRemoveCapturedPiece:200,
             delayAutoPlay:1000
         };
 
