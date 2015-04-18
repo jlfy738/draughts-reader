@@ -123,6 +123,19 @@ var
         return map;
     };
 
+    function isItemVisibleInScrollBox(item, boxWithScroll){
+        var $elem = $(item);
+        var $box = boxWithScroll;
+
+        var boxTop = $box.offset().top;
+        var boxBottom = boxTop + $box.height();
+        
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+
+        return ((elemBottom <= boxBottom) && (elemTop >= boxTop));
+    }
+
     $.player = function(element, options) {
 
         // Default options
@@ -343,6 +356,16 @@ var
         var refreshNotation = function(){
             var $notationArea = $("#" + id + " .notation");
             $notationArea.html(getHTMLNotation(game.getNotation()));
+
+            // Manage scroll
+            $("#" + id + " .notation .active").each(function() {
+                if (!isItemVisibleInScrollBox(this, $notationArea)){
+                    var to = $(this).offset().top - $notationArea.offset().top + $notationArea.scrollTop();
+                    to = to - ($notationArea.height() / 2);
+                
+                    $notationArea.scrollTop(to);
+                }
+            });
         };
 
         var refreshCanvas = function(){
