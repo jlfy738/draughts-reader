@@ -357,7 +357,8 @@ var
             var $notationArea = $("#" + id + " .notation");
             $notationArea.html(getHTMLNotation(game.getNotation()));
 
-            // Manage scroll
+            // Auto scrolling
+            // 'each' used to target dynamically generated content
             $("#" + id + " .notation .active").each(function() {
                 if (!isItemVisibleInScrollBox(this, $notationArea)){
                     var to = $(this).offset().top - $notationArea.offset().top + $notationArea.scrollTop();
@@ -367,6 +368,11 @@ var
                 }
             });
         };
+
+        var initNotationScroll = function(){
+            var $notationArea = $("#" + id + " .notation");
+            $notationArea.scrollTop(0);
+        }
 
         var refreshCanvas = function(){
             var $c = $("#" + id + " .cv-board")[0];
@@ -386,6 +392,7 @@ var
             razAutoPlay();
             game.start();
             refreshAll();
+            initNotationScroll();
         };
         
         var applyEnd = function(){
