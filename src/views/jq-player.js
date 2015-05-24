@@ -140,7 +140,6 @@ var
 
         // Default options
         var defaults = {
-            format:'pdn',
             firstLoadNum:1,
             cvSquareSize:40,
             cvSquareDarkColor:'#B4814E',
@@ -188,11 +187,14 @@ var
             dgController = new DGController();
             dgController.setCurrentNumGame(1);
 
-            if (plugin.options['format'] == "damweb"){
-                var position = $element.attr("data-position");
-                var notation = $element.attr("data-notation");
+            var position = $element.attr("data-position");
+            var notation = $element.attr("data-notation");
+            // Damweb Format
+            if (typeof position !== typeof undefined && position !== false) {
                 dgController.initDamWeb(position, notation);
-            } else if (plugin.options['format'] == "pdn"){
+            } 
+            // PDN Format
+            else {
                 var pdnText = $element.html();
                 dgController.initPDN(pdnText);
             }
