@@ -10,7 +10,7 @@ A JQuery plugin to read Draughts Game
 
 ## How to use ?
 To get started, download the plugin, unzip it and copy files to your website directory. 
-Draughts reader require JQuery plugin v1.7+.
+Draughts reader requires JQuery plugin v1.7+.
 Load these 2 files in your HTML document.
 
 
