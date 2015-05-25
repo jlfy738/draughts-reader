@@ -136,7 +136,7 @@ var
         return ((elemBottom <= boxBottom) && (elemTop >= boxTop));
     }
 
-    $.player = function(element, options) {
+    $.dreader = function(element, options) {
 
         // Default options
         var defaults = {
@@ -712,11 +712,11 @@ var
 
 
 
-    $.fn.player = function(options) {
+    $.fn.dreader = function(options) {
         return this.each(function() {
-            if (undefined == $(this).data('player')) {
-                var plugin = new $.player(this, options);
-                $(this).data('player', plugin);
+            if (undefined == $(this).data('dreader')) {
+                var plugin = new $.dreader(this, options);
+                $(this).data('dreader', plugin);
             }
         });
     };
