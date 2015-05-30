@@ -1,12 +1,14 @@
 draughts-reader
 ===============
 
-A JQuery plugin to read Draughts Game
+Draughts reader is a JQuery plugin for reading draughts game notations like `PDN` notation or `DamWeb` notation.
+This plugin is just the UI. It depends on these Javascript projects :
+- draughts-reader-core : to calculate movements.
+- draughts-game-controller : to convert various text notation into Game object.
+- draughts-pdn-parser : Javascript PDN (Portable Draughts Notation) parser.
+- draughts-damweb-parser : Javascript Damweb parser.
 
 
-## Quick start
-- Install : `$ npm install`
-- Build : `$ npm run build` (NB : using browserify)
 
 ## How to use ?
 To get started, download the plugin, unzip it and copy files to your website directory. 
@@ -30,7 +32,7 @@ Draughts reader may interpret 2 types of notation.
 </div>
 ```
 
-**Damweb notation**
+**Damweb notation**  
 Use data attributes : `data-position` and `data-notation`.
 
 ```html
@@ -65,3 +67,32 @@ $('#custom-game').dreader({
     displayNumbers:true
 });
 ```
+
+
+## License
+
+GNU General Public License (GPL), v3
+
+## Contribute
+
+The main purpose of this repository is to continue to improve Draughts Reader plugin.
+
+
+### Prerequisites
+
+- You have node installed.
+- You are familiar with npm.
+- You are familiar with git.
+
+### Installation
+
+Clone a copy of the draugths-reader git repository by running:  
+`git clone https://github.com/jlfy738/draughts-reader.git`
+
+Enter the draughts-reader directory and install dependencies:  
+`npm install`
+
+### Build
+
+Once you have the repository cloned, building a copy of draughts-reader.js is really easy.  
+`npm run build` (NB : using browserify)

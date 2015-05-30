@@ -13,5 +13,5 @@
   "scripts": {
     "build": "rm -rf ./dist/ && mkdir \"./dist/\" && browserify ./src/main.js -o ./dist/draughts-reader.js"
   },
-  "licence" : "MIT"
+  "licence" : "GPL-3.0"
 }
