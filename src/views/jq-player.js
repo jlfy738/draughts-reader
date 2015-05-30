@@ -1,6 +1,5 @@
 var
     DGController = require('draughts-game-controller'),
-    Game = require('draughts-reader-core').Game,
     Piece = require('draughts-reader-core').Piece
 ;
 
@@ -185,7 +184,6 @@ var
             plugin.options = $.extend({}, defaults, options);
             
             dgController = new DGController();
-            dgController.setCurrentNumGame(1);
 
             var position = $element.attr("data-position");
             var notation = $element.attr("data-notation");
@@ -200,21 +198,16 @@ var
             }
 
 
+            var firstNum = 0; // No game
             var nbGames = dgController.getGameCount();
             if (nbGames > 0){
-                var firstNum = plugin.options['firstLoadNum'];
+                firstNum = plugin.options['firstLoadNum'];
                 if (firstNum > nbGames){
                     firstNum = 1;
                 }
-                initGame(firstNum);
             }
-
-            // if no game is loaded, we initialize an emty one.
-            if (game === null){
-                game = new Game();
-                board = game.board;
-            }
-      
+            
+            initGame(firstNum);
             initLayout();
 
             $("#" + id).on("change", "select[name="+id+"-menu]",function(){
@@ -249,16 +242,17 @@ var
         };
 
         var initGame = function(currentNumGame){
+            if (!currentNumGame){
+                currentNumGame = 0;
+            }
+
             razAnim();
             razAutoPlay();
             
-            if (currentNumGame){
-                dgController.setCurrentNumGame(currentNumGame);
-                game = dgController.getGame();
-                game.start();
-            } else {
-                game = new Game();
-            }
+            dgController.setCurrentNumGame(currentNumGame);
+            game = dgController.getGame();
+            game.start();
+            
             board = game.board;
         };
 
