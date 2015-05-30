@@ -70,7 +70,7 @@ $('#custom-game').dreader({
 
 ## Screenshot
 
-![alt tag](https://github.com/jlfy738/draughts-reader/blob/master/src/doc/draughts-player.png)
+![alt tag](https://github.com/jlfy738/draughts-reader/blob/master/src/doc/draughts-reader.png)
 
 ## License
 
