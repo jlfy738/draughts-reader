@@ -2,11 +2,11 @@ draughts-reader
 ===============
 
 Draughts reader is a JQuery plugin for reading draughts game notations like `PDN` notation or `DamWeb` notation.
-This plugin is just the UI. It depends on these Javascript projects :
+This plugin is just the UI. It depends and embeds the following Javascript projects :
 - [draughts-reader-core](https://github.com/jlfy738/draughts-reader-core) : to calculate movements.
 - [draughts-game-controller](https://github.com/jlfy738/draughts-game-controller) : to convert various text notation into Game object.
-- [draughts-pdn-parser](https://github.com/jlfy738/draughts-pdn-parser) : Javascript PDN (Portable Draughts Notation) parser.
-- [draughts-damweb-parser](https://github.com/jlfy738/draughts-damweb-parser) : Javascript Damweb parser.
+  - [draughts-pdn-parser](https://github.com/jlfy738/draughts-pdn-parser) : Javascript PDN (Portable Draughts Notation) parser.
+  - [draughts-damweb-parser](https://github.com/jlfy738/draughts-damweb-parser) : Javascript Damweb parser.
 
 
 
