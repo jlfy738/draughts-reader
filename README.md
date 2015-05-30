@@ -24,7 +24,7 @@ Load these 2 files in your HTML document.
 Then, create a `<div>` element where you write the notation.
 Draughts reader may interpret 2 types of notation.
 
-**PDN notation**
+### PDN notation
 
 ```html
 <div class="game">
@@ -32,7 +32,7 @@ Draughts reader may interpret 2 types of notation.
 </div>
 ```
 
-**Damweb notation**  
+### Damweb notation
 Use data attributes : `data-position` and `data-notation`.
 
 ```html
@@ -42,8 +42,7 @@ Use data attributes : `data-position` and `data-notation`.
 </div>
 ```
 
-----
-
+### Rendering
 For rendering, initialise the script like this:
 
 ```html
@@ -57,7 +56,7 @@ For rendering, initialise the script like this:
 May also be passed an optional options object which will extend the default values.
 
 ```javascript
-$('#custom-game').dreader({
+$('.game').dreader({
     cvSquareSize:40,
     cvSquareDarkColor:'#329A4D',
     cvSquareLightColor:'#FFFF80',
@@ -67,6 +66,40 @@ $('#custom-game').dreader({
     displayNumbers:true
 });
 ```
+
+### Adding some style CSS
+Inside the <head> tag or in an external style sheet.
+
+```html
+<style type="text/css">
+    .game .inner-box { border: 1px dotted #000; padding:2px; }
+    .game .outer-box { border: 4px solid #B4814E; padding:2px; }
+
+    .game .control-bar { display:inline-block; padding:5px; }
+
+    .game .pdn-games { margin: 0 0 5px 1em; }
+    .game .pdn-games select { width:200px; border:1px solid #888; padding:3px; }
+
+    .game .notation { 
+        display:inline-block;
+        border:1px solid #777; 
+        font-family:"Courier New", Courier, monospace; 
+        padding:0.5em;
+        margin-left:1em;
+        background-color: #fff;
+        max-height:300px;
+        overflow:scroll;
+    }
+    .game .notation span { 
+        display: inline-block;
+        font-size: 14px;
+        padding: 2px 5px;
+        cursor:pointer;
+    }
+    .game .notation span.active { background-color: #FF7; }
+</style>
+```
+
 
 ## Screenshot
 
