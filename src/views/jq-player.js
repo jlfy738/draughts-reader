@@ -590,7 +590,9 @@ var
             drawSquare(ctx, move.startingSquareNum, piecePlayed, plugin.options['cvSquareStartColor']);
 
             // color end square.
-            drawSquare(ctx, move.endingSquareNum, Piece.EMPTY, plugin.options['cvSquareStartColor']);
+            if (move.startingSquareNum != move.endingSquareNum){
+                drawSquare(ctx, move.endingSquareNum, Piece.EMPTY, plugin.options['cvSquareEndColor']);
+            }
 
             // color intermediate squares.
             if (move.isCaptured){
