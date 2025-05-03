@@ -551,7 +551,11 @@ var
             if (plugin.options['displayNumbers']){
                 ctx.font = plugin.options['numberTextFont'];
                 ctx.fillStyle = plugin.options['numberTextColor'];
-                ctx.fillText("" + num, x + 2, y + sqWidth - 2);
+
+                // Center text
+                var px = (sqWidth / 2) - (ctx.measureText("" + num).width / 2);
+                var py = (sqWidth / 2) + (ctx.measureText("M").width / 2);
+                ctx.fillText("" + num, x + px, y + py);
             }
 
             var x = x + (sqWidth / 2);
