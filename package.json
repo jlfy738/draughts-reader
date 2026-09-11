@@ -7,11 +7,12 @@
     "jquery": "^3.7.1"
   },
   "devDependencies": {
-    "browserify": "^17.0.1"
+    "esbuild": "^0.28.2",
+    "gulp": "^5.0.1"
   },
   "main": "src/main.js",
   "scripts": {
-    "build": "rm -rf ./dist/ && mkdir \"./dist/\" && browserify ./src/main.js -o ./dist/draughts-reader.js"
+    "build": "gulp build"
   },
   "licence": "GPL-3.0"
 }

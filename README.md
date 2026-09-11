@@ -131,4 +131,8 @@ Enter the draughts-reader directory and install dependencies:
 ### Build
 
 Once you have the repository cloned, building a copy of draughts-reader.js is really easy.  
-`npm run build` (NB : using browserify)
+`npm run build` (using [Gulp](https://gulpjs.com/) + [esbuild](https://esbuild.github.io/) to bundle `src/main.js`)
+
+This generates two files in `dist/`:
+- `draughts-reader.js`: bundled, unminified (for debugging).
+- `draughts-reader.min.js`: bundled and minified (for production use, see above).
