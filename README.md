@@ -69,6 +69,19 @@ dreader('.game', {
 
 `dreader()` accepts a CSS selector, a single element, or a NodeList/array of elements, and returns the created instance (or an array of instances for multiple elements).
 
+### Move animation
+
+Two animation styles are available for playing a move, controlled by the `animationStyle` option:
+- `'classic'` (default): the start/end/landing squares are highlighted, then the piece snaps from square to square. Timing is controlled by `delayAfterHighlight`, `delayToJump` and `delayToRemoveCapturedPiece`.
+- `'smooth'`: the piece slides continuously along the move's path (including through capture jumps), eased in/out. Timing is controlled by `moveDuration` (duration in ms of one slide segment).
+
+```javascript
+dreader('.game', {
+    animationStyle: 'smooth',
+    moveDuration: 500
+});
+```
+
 ### Adding some style CSS
 Inside the <head> tag or in an external style sheet.
 

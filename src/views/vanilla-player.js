@@ -143,9 +143,11 @@ var
             displayNumbers:false,
             numberTextFont:"10px Arial",
             numberTextColor:"#FFFFFF",
+            animationStyle:'classic', // 'classic' (highlight then snap) or 'smooth' (sliding piece)
             delayAfterHighlight:400,
             delayToJump:400,
             delayToRemoveCapturedPiece:200,
+            moveDuration:500, // duration in ms of one slide segment, used when animationStyle is 'smooth'
             delayAutoPlay:1000
         };
 
@@ -161,6 +163,8 @@ var
         var id = getUniqueId(element);
         // Timer (canvas animation)
         var timer = null;
+        // requestAnimationFrame id (smooth canvas animation)
+        var animationFrame = null;
         // Timer (Autoplay)
         var timerAutoPlay = null;
         // What time is it at the end of the last animation ?
@@ -347,6 +351,10 @@ var
                 clearInterval(timer);
                 timer = null;
             }
+            if (animationFrame !== null){
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
         };
 
         var razAutoPlay = function(){
@@ -439,7 +447,7 @@ var
         var autoPlay = function(){
             var callback = function() {
                 // waiting the end of the current animation if it exists.
-                if (timer !== null){
+                if (timer !== null || animationFrame !== null){
                     return;
                 }
 
@@ -582,18 +590,49 @@ var
             drawPiece(ctx, piece, x, y, r);
         };
 
-        var drawCanvasContent = function(ctx){
+        var drawCanvasContent = function(ctx, excludeSquareNum, pieceSnapshot){
             var sqWidth = plugin.options['cvSquareSize'];
             ctx.fillStyle = plugin.options['cvSquareLightColor'];
             ctx.fillRect(0, 0, 10*sqWidth, 10*sqWidth);
 
             for (var num = 1; num <= 50; num++){
-                var p = board.getSquare(num).piece;
+                var p;
+                if (num === excludeSquareNum){
+                    p = Piece.EMPTY;
+                } else if (pieceSnapshot){
+                    p = pieceSnapshot[num];
+                } else {
+                    p = board.getSquare(num).piece;
+                }
                 drawSquare(ctx, num, p);
             }
         };
 
+        // Pixel center of a square, matching drawSquare's layout math.
+        var getSquareCenter = function(num){
+            var nRow = ~~((num - 1) / 5) + 1; // [1..10]
+            var nCol = ((num - 1) % 5) + 1; // [1..5]
+            var sqWidth = plugin.options['cvSquareSize'];
+
+            var x = (nRow % 2 == 1) ? (2 * sqWidth * (nCol - 1) + sqWidth) : (2 * sqWidth * (nCol - 1));
+            var y = sqWidth * (nRow - 1);
+
+            return { x: x + sqWidth / 2, y: y + sqWidth / 2 };
+        };
+
+        var easeInOutQuad = function(t){
+            return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        };
+
         var drawCanvasNextMove = function(){
+            if (plugin.options['animationStyle'] === 'smooth'){
+                drawCanvasNextMoveSmooth();
+            } else {
+                drawCanvasNextMoveClassic();
+            }
+        };
+
+        var drawCanvasNextMoveClassic = function(){
             var move = game.getNextMove();
             if (move === null) {
                 return;
@@ -604,6 +643,90 @@ var
 
             var piecePlayed = board.getPiece(move.startingSquareNum);
             drawCanvasNextMoveStep2(ctx, move, piecePlayed);
+        };
+
+        // Builds the list of square numbers the piece visually crosses:
+        // starting square, then each capture landing square, then the ending square.
+        var getMovePath = function(move){
+            var path = [move.startingSquareNum];
+
+            if (move.isCaptured){
+                var landingSquaresNum = move.getLandingSquaresNum();
+                for (var i = 0; i < landingSquaresNum.length; i++){
+                    if (landingSquaresNum[i] != move.startingSquareNum){
+                        path.push(landingSquaresNum[i]);
+                    }
+                }
+            }
+
+            if (path[path.length - 1] != move.endingSquareNum){
+                path.push(move.endingSquareNum);
+            }
+
+            return path;
+        };
+
+        var drawCanvasNextMoveSmooth = function(){
+            var move = game.getNextMove();
+            if (move === null) {
+                return;
+            }
+
+            var c = element.querySelector('.cv-board');
+            var ctx = c.getContext("2d");
+
+            var piecePlayed = board.getPiece(move.startingSquareNum);
+            var path = getMovePath(move);
+
+            // Snapshot the board now: game.next() mutates `board` right after this function
+            // returns (see applyNextAuto), well before the animation is done playing. Without
+            // this, each frame would redraw the *post-move* board (piece already on its final
+            // square) underneath the sliding piece.
+            var pieceSnapshot = [];
+            for (var num = 1; num <= 50; num++){
+                pieceSnapshot[num] = board.getSquare(num).piece;
+            }
+
+            var sqWidth = plugin.options['cvSquareSize'];
+            var r = sqWidth / 2 - (sqWidth / 10);
+            var segmentDuration = plugin.options['moveDuration'];
+
+            var segmentIndex = 0;
+            var segmentStartTime = null;
+
+            var animateSegment = function(now){
+                if (segmentStartTime === null){
+                    segmentStartTime = now;
+                }
+                var t = Math.min((now - segmentStartTime) / segmentDuration, 1);
+                var eased = easeInOutQuad(t);
+
+                var from = getSquareCenter(path[segmentIndex]);
+                var to = getSquareCenter(path[segmentIndex + 1]);
+                var x = from.x + (to.x - from.x) * eased;
+                var y = from.y + (to.y - from.y) * eased;
+
+                // Redraw the pre-move board snapshot without the moving piece on its starting
+                // square, then draw it as a floating overlay at its interpolated position.
+                drawCanvasContent(ctx, move.startingSquareNum, pieceSnapshot);
+                drawPiece(ctx, piecePlayed, x, y, r);
+
+                if (t < 1){
+                    animationFrame = requestAnimationFrame(animateSegment);
+                } else {
+                    segmentIndex++;
+                    if (segmentIndex < path.length - 1){
+                        segmentStartTime = null;
+                        animationFrame = requestAnimationFrame(animateSegment);
+                    } else {
+                        animationFrame = null;
+                        // Reuse the classic finalisation step: crowning + captured pieces removal.
+                        drawCanvasNextMoveStep4(ctx, move, piecePlayed);
+                    }
+                }
+            };
+
+            animationFrame = requestAnimationFrame(animateSegment);
         };
 
         var drawCanvasNextMoveStep2 = function(ctx, move, piecePlayed){
