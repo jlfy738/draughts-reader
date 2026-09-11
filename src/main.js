@@ -1,2 +1,2 @@
-var jqplayer = require('./views/jq-player');
+var dreader = require('./views/vanilla-player');
 
